@@ -16,11 +16,11 @@ const OrganizerOverviewPage = async () => {
     const isPremium = user?.isPremium;
 
     return (
-        <div className="space-y-6 mt-6">
+        <div className="space-y-2 mt-4">
             <DashboardHeading
                 title="Overview"
                 description="Dashboard Overview" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <Card className="glass border-white/25" radius="lg">
                     <div className="p-6 flex flex-row items-center justify-between">
                         <div className="space-y-1">

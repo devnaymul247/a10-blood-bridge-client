@@ -1,14 +1,15 @@
 'use client';
 import Logo from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaPlus, FaSignOutAlt, FaTicketAlt, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
+import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaPlus, FaSignInAlt, FaSignOutAlt, FaTicketAlt, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
 
 
 const DashboardSideBar = () => {
   const { data: session } = authClient.useSession();
-    console.log("Session in DashboardSideBar:", session); // Debugging line
+
   const handleLogout = async () => {
     await authClient.signOut();
     toast.success("Signed out successfully");
@@ -44,12 +45,12 @@ const DashboardSideBar = () => {
     <aside className="w-64 h-screen border-r border-white/25">
       <div className="h-full flex flex-col bg-slate-900 backdrop-blur-xl">
         {/* Brand / Logo */}
-        <div className="px-6 py-5 border-b border-white/25">
+        <div className="px-6 py-5 border-b border-white/10">
           <Logo />
         </div>
 
         {/* User Profile */}
-        <div className="px-6 py-5 border-b border-white/25">
+        <div className="px-6 py-5 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-500/60 shrink-0">
               <Image
@@ -88,9 +89,6 @@ const DashboardSideBar = () => {
                     <Icon size={20} />
                   </span>
                   <span>{label}</span>
-
-
-                  {/* {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-pink-400" />} */}
                 </Link>
               )
             })
@@ -99,14 +97,17 @@ const DashboardSideBar = () => {
         </nav>
 
         {/* Bottom Links */}
-        <div className="px-3 py-4 border-t border-white/5 space-y-1">
+        <div className="px-3 py-4 border-t border-white/10 space-y-1">
           <Link href="/" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150">
             <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
               <FaHome size={13} />
             </span>
             Back to Site
           </Link>
-          <button
+          
+          {
+            session ? (
+                <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-150 cursor-pointer"
           >
@@ -115,6 +116,16 @@ const DashboardSideBar = () => {
             </span>
             Sign Out
           </button>
+            ) : (
+                <Link href="/signin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150">
+
+            <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+              <FaSignInAlt size={13} />
+            </span>
+                  Sign In
+                </Link>
+            )
+          }
         </div>
       </div>
     </aside>
