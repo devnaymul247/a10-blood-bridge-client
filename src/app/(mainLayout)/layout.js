@@ -1,11 +1,5 @@
-import { Outfit } from "next/font/google";
-import "./globals.css";
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-
-const OutfitFont = Outfit({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 
 export const metadata = {
@@ -17,15 +11,16 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${OutfitFont.variable} h-full antialiased light`}
+      className={`h-full antialiased dark`}
       suppressHydrationWarning
-      data-theme="light"
+      data-theme="dark"
     >
       <body className="min-h-full flex flex-col">
+        <Navbar />
         <main>
           {children}
         </main>
-        
+        <Footer />
       </body>
     </html>
   );
