@@ -18,7 +18,7 @@ const OrganizerOverviewPage = async () => {
     return (
         <div className="space-y-2 mt-4">
             <DashboardHeading
-                title="Overview"
+                title="Welcome to Your Dashboard"
                 description="Dashboard Overview" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 <Card className="glass border-white/25" radius="lg">

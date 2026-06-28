@@ -95,7 +95,7 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/all-appointments" className={isActive("/all-appointments")}>Donation Requests</Link>
+                        <Link href="/donation-requests" className={isActive("/donation-requests")}>Donation Requests</Link>
                     </li>
                     <li>
                         <Link href="/search-donor" className={isActive("/search-donor")}>Search Donor</Link>
@@ -184,7 +184,7 @@ const Navbar = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link href="/all-appointments" className={`block py-2 ${isActive("/all-appointments")}`}>
+                            <Link href="/donation-requests" className={`block py-2 ${isActive("/donation-requests")}`}>
                                 Donation Requests
                             </Link>
                         </li>
