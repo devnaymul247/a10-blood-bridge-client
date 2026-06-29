@@ -1,6 +1,17 @@
 'use client';
-import { useState } from 'react';
-import { Card, Input, Button, } from '@heroui/react';
+import React, { useState } from 'react';
+import { 
+  Card, 
+  Button, 
+  Separator,
+  TextField,
+  Label,
+  Input,
+  FieldError,
+  Select,
+  ListBox,
+  TextArea,
+} from '@heroui/react';
 import { Icon } from '@iconify/react';
 
 // Mock data for demonstration
@@ -30,242 +41,287 @@ const BLOOD_GROUPS = [
 ];
 
 export default function CreateDonationRequest() {
-  // Form state
-  const [requesterName, setRequesterName] = useState('Donor');
-  const [requesterEmail, setRequesterEmail] = useState('donor@gmail.com');
-  const [recipientName, setRecipientName] = useState('Akbor');
-  const [bloodGroup, setBloodGroup] = useState('');
-  const [district, setDistrict] = useState('Noakhali');
-  const [upazila, setUpazila] = useState('');
-  const [hospitalName, setHospitalName] = useState('Hospital 1');
-  const [hospitalAddress, setHospitalAddress] = useState('');
-  const [requiredDate, setRequiredDate] = useState('2026-06-13');
-  const [requiredTime, setRequiredTime] = useState('16:00');
-  const [requestMessage, setRequestMessage] = useState('Some reason');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({
-      requesterName,
-      requesterEmail,
-      recipientName,
-      bloodGroup,
-      district,
-      upazila,
-      hospitalName,
-      hospitalAddress,
-      requiredDate,
-      requiredTime,
-      requestMessage,
-    });
-    alert('Donation request created successfully!');
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
   };
 
   return (
     <div className="min-h-screen bg-black text-white p-6 md:p-8">
       <Card className="max-w-4xl mx-auto bg-default-100/10 backdrop-blur-sm border border-default-200/20 shadow-xl">
-        <Card.Header className="flex flex-col items-start gap-2 px-6 pt-6 pb-4">
+        {/* Using plain divs here instead of Card.Header/Card.Body/Card.Content
+            because that sub-API has changed across HeroUI v3 alpha/beta/stable
+            releases (Card.Body vs Card.Content). Plain divs avoid the mismatch
+            entirely and look identical. */}
+        <div className="flex flex-col items-start gap-2 px-6 pt-6 pb-4">
           <div className="flex items-center gap-3">
-            <Icon icon="mdi:blood-bag" className="text-danger-500 text-3xl" />
-            <h1 className="text-2xl font-bold text-white">New Donation Request</h1>
+            <Icon icon="mdi:blood-bag" className="text-red-500 text-3xl" />
+            <h1 className="text-2xl font-bold text-slate-500">New Donation Request</h1>
           </div>
-          <p className="text-default-400 text-sm">
+          <p className="text-slate-400 text-sm">
             Complete the form below to broadcast an urgent request to the donor community.
           </p>
-        </Card.Header>
-        <Card.Body className="px-6 py-6">
+        </div>
+        <Separator className="bg-default-200/20" />
+        <div className="px-6 py-6">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Requester Info */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Icon icon="mdi:account" className="text-primary-400" />
+              <h2 className="text-lg font-semibold text-[#669bbc] mb-4 flex items-center gap-2">
+                <Icon icon="mdi:account" className=" text-[#669bbc]" />
                 Requester Info
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Your Name"
-                  placeholder="Enter your full name"
-                  value={requesterName}
-                  onValueChange={setRequesterName}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:account-outline" className="text-default-400" />}
-                />
-                <Input
-                  label="Your Email"
-                  placeholder="Enter your email"
-                  value={requesterEmail}
-                  onValueChange={setRequesterEmail}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:email-outline" className="text-default-400" />}
-                />
+                <TextField 
+                  name="requesterName"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Your Name</Label>
+                  <Input 
+                    placeholder="Enter your full name" 
+                    variant="bordered"
+                    className="text-white"
+                  />
+                  <FieldError />
+                </TextField>
+                
+                <TextField 
+                  name="requesterEmail"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Your Email</Label>
+                  <Input 
+                    placeholder="Enter your email" 
+                    variant="bordered"
+                    className="text-white"
+                  />
+                  <FieldError />
+                </TextField>
               </div>
             </section>
 
             {/* Patient Details */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Icon icon="mdi:patient" className="text-primary-400" />
+              <h2 className="text-lg font-semibold text-[#669bbc] mb-4 flex items-center gap-2">
+                <Icon icon="mdi:patient" className=" text-[#669bbc]" />
                 Patient Details
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Recipient Name"
-                  placeholder="Enter full name"
-                  value={recipientName}
-                  onValueChange={setRecipientName}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:account" className="text-default-400" />}
-                />
-                
-                {/* Blood Group Select - Custom dropdown */}
-                <div className="relative">
-                  <label className="text-default-400 text-sm block mb-1">Blood Group Needed</label>
-                  <select
-                    value={bloodGroup}
-                    onChange={(e) => setBloodGroup(e.target.value)}
-                    className="w-full bg-transparent border border-default-200/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-danger-500"
-                  >
-                    <option value="">Select Group</option>
-                    {BLOOD_GROUPS.map((group) => (
-                      <option key={group.value} value={group.value} className="bg-black">
-                        {group.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <TextField 
+                  name="recipientName"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Recipient Name</Label>
+                  <Input 
+                    placeholder="Enter full name" 
+                    variant="bordered"
+                    className="text-white"
+                  />
+                  <FieldError />
+                </TextField>
 
-                {/* District Select - Custom dropdown */}
-                <div className="relative">
-                  <label className="text-default-400 text-sm block mb-1">District</label>
-                  <select
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full bg-transparent border border-default-200/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-500"
-                  >
-                    <option value="">Select District</option>
-                    {DISTRICTS.map((d) => (
-                      <option key={d.value} value={d.value} className="bg-black">
-                        {d.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* Blood Group Select - Hero UI v3: value/onChange, not selectedKeys/onSelectionChange */}
+                <Select 
+                  placeholder="Select Group"
+                  className="w-full"
+                  name='bloodGroup'
+                >
+                  <Label className="text-default-400">Blood Group Needed</Label>
+                  <Select.Trigger className="bg-transparent border border-default-200/30 rounded-lg px-3 py-2">
+                    <Select.Value />
+                    <Select.Indicator>
+                      <Icon icon="mdi:chevron-down" className="text-default-400" />
+                    </Select.Indicator>
+                  </Select.Trigger>
+                  <Select.Popover className="bg-black border border-default-200/20">
+                    <ListBox className="text-white">
+                      {BLOOD_GROUPS.map((group) => (
+                        <ListBox.Item 
+                          key={group.value} 
+                          id={group.value} 
+                          textValue={group.label}
+                          className="hover:bg-red-200/10 "
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon icon="healthicons:blood-drop" className="text-danger-400" />
+                            {group.label}
+                          </div>
+                          <ListBox.ItemIndicator>
+                            <Icon icon="mdi:check" className="text-danger-500" />
+                          </ListBox.ItemIndicator>
+                        </ListBox.Item>
+                      ))}
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
 
-                {/* Upazila Select - Custom dropdown */}
-                <div className="relative">
-                  <label className="text-default-400 text-sm block mb-1">Upazila</label>
-                  <select
-                    value={upazila}
-                    onChange={(e) => setUpazila(e.target.value)}
-                    className="w-full bg-transparent border border-default-200/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary-500"
-                  >
-                    <option value="">Select Upazila</option>
-                    {UPAZILAS.map((u) => (
-                      <option key={u.value} value={u.value} className="bg-black">
-                        {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {/* District Select - Hero UI v3 */}
+                <Select
+                  placeholder="Select District"
+                  className="w-full"
+                  name='district'
+                >
+                  <Label className="text-default-400">District</Label>
+                  <Select.Trigger className="bg-transparent border border-default-200/30 rounded-lg px-3 py-2">
+                    <Select.Value />
+                    <Select.Indicator>
+                      <Icon icon="mdi:chevron-down" className="text-default-400" />
+                    </Select.Indicator>
+                  </Select.Trigger>
+                  <Select.Popover className="bg-black border border-default-200/20">
+                    <ListBox className="text-white">
+                      {DISTRICTS.map((d) => (
+                        <ListBox.Item 
+                          key={d.value} 
+                          id={d.value} 
+                          textValue={d.label}
+                          className="hover:bg-red-200/10 data-[selected=true]:bg-primary-500/20"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon icon="mdi:map-marker" className="text-default-400" />
+                            {d.label}
+                          </div>
+                          <ListBox.ItemIndicator>
+                            <Icon icon="mdi:check" className="text-primary-500" />
+                          </ListBox.ItemIndicator>
+                        </ListBox.Item>
+                      ))}
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
+
+                {/* Upazila Select - Hero UI v3 */}
+                <Select
+                  placeholder="Select Upazila"
+                  className="w-full"
+                  name='upazila'
+                >
+                  <Label className="text-default-400">Upazila</Label>
+                  <Select.Trigger className="bg-transparent border border-default-200/30 rounded-lg px-3 py-2">
+                    <Select.Value />
+                    <Select.Indicator>
+                      <Icon icon="mdi:chevron-down" className="text-default-400" />
+                    </Select.Indicator>
+                  </Select.Trigger>
+                  <Select.Popover className="bg-black border border-default-200/20">
+                    <ListBox className="text-white">
+                      {UPAZILAS.map((u) => (
+                        <ListBox.Item 
+                          key={u.value} 
+                          id={u.value} 
+                          textValue={u.label}
+                          className="hover:bg-red-200/10 data-[selected=true]:bg-primary-500/20"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon icon="mdi:map-marker-radius" className="text-default-400" />
+                            {u.label}
+                          </div>
+                          <ListBox.ItemIndicator>
+                            <Icon icon="mdi:check" className="text-primary-500" />
+                          </ListBox.ItemIndicator>
+                        </ListBox.Item>
+                      ))}
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
               </div>
             </section>
 
             {/* Hospital & Timing */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Icon icon="mdi:hospital" className="text-primary-400" />
+              <h2 className="text-lg font-semibold text-[#669bbc] mb-4 flex items-center gap-2">
+                <Icon icon="mdi:hospital" className=" text-[#669bbc]" />
                 Hospital & Timing
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Hospital Name"
-                  placeholder="Enter hospital name"
-                  value={hospitalName}
-                  onValueChange={setHospitalName}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:hospital-building" className="text-default-400" />}
-                />
-                <Input
-                  label="Full Address"
-                  placeholder="Street / Ward / Area"
-                  value={hospitalAddress}
-                  onValueChange={setHospitalAddress}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:map-marker-outline" className="text-default-400" />}
-                />
-                <Input
-                  label="Required Date"
+                <TextField 
+                  name="hospitalName"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Hospital Name</Label>
+                  <Input 
+                    placeholder="Enter hospital name" 
+                    variant="bordered"
+                    className="text-white"
+                  />
+                  <FieldError />
+                </TextField>
+
+                <TextField 
+                  name="hospitalAddress"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Full Address</Label>
+                  <Input 
+                    placeholder="Street / Ward / Area" 
+                    variant="bordered"
+                    className="text-white"
+                     
+                  />
+                  <FieldError />
+                </TextField>
+
+                <TextField 
+                  name="requiredDate"
                   type="date"
-                  value={requiredDate}
-                  onValueChange={setRequiredDate}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:calendar" className="text-default-400" />}
-                />
-                <Input
-                  label="Required Time"
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Required Date</Label>
+                  <Input 
+                    variant="bordered"
+                    className="text-[#669bbc]"
+                  />
+                  <FieldError />
+                </TextField>
+
+                <TextField 
+                  name="requiredTime"
                   type="time"
-                  value={requiredTime}
-                  onValueChange={setRequiredTime}
-                  variant="bordered"
-                  classNames={{
-                    input: "text-white",
-                    label: "text-default-400",
-                  }}
-                  startContent={<Icon icon="mdi:clock-outline" className="text-default-400" />}
-                />
+                  className="w-full"
+                >
+                  <Label className="text-default-400">Required Time</Label>
+                  <Input 
+                    variant="bordered"
+                    className="text-[#669bbc]"
+                  />
+                  <FieldError />
+                </TextField>
               </div>
             </section>
 
             {/* Request Message */}
             <section>
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Icon icon="mdi:message-text" className="text-primary-400" />
+              <h2 className="text-lg font-semibold text-[#669bbc] mb-4 flex items-center gap-2">
+                <Icon icon="mdi:message-text" className=" text-[#669bbc]" />
                 Request Message
               </h2>
-              <textarea
-                placeholder="Provide any additional details or special instructions"
-                value={requestMessage}
-                onChange={(e) => setRequestMessage(e.target.value)}
-                className="w-full bg-transparent border border-default-200/30 rounded-lg px-3 py-2 text-white min-h-[120px] focus:outline-none focus:border-primary-500"
-                rows="4"
+              <TextField 
+                name="requestMessage"
+                className="w-full"
               >
-              </textarea>
+                <Label className="text-default-400">Message</Label>
+                <TextArea 
+                  placeholder="Provide any additional details or special instructions"
+                  variant="bordered"
+                  className="text-red-400 min-h-[120px]"
+                />
+                <FieldError />
+              </TextField>
             </section>
 
             {/* Action Buttons */}
+            <Separator className="bg-default-200/20" />
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
               <Button
                 type="button"
                 variant="flat"
                 color="default"
-                className="text-white border border-default-200/30"
+                className="text-[#669bbc] border border-[#669bbc]"
                 onPress={() => {
-                  // Reset logic if needed
                   console.log('Cancel');
                 }}
               >
@@ -275,13 +331,12 @@ export default function CreateDonationRequest() {
                 type="submit"
                 color="danger"
                 className="font-semibold"
-                startContent={<Icon icon="mdi:send" />}
               >
                 Create Donation Request
               </Button>
             </div>
           </form>
-        </Card.Body>
+        </div>
       </Card>
     </div>
   );
