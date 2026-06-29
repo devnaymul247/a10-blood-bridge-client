@@ -155,7 +155,6 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter your full name" 
                     variant="bordered"
-                    isRequired
                     className="text-default-400"
                   />
                   <FieldError />
@@ -170,7 +169,6 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter your email" 
                     variant="bordered"
-                    isRequired
                     className="text-default-400"
                   />
                   <FieldError />
@@ -194,7 +192,6 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter full name" 
                     variant="bordered"
-                    isRequired
                     className="text-default-400"
                   />
                   <FieldError />
@@ -349,7 +346,6 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter hospital name" 
                     variant="bordered"
-                    isRequired
                     className="text-default-400"
                   />
                   <FieldError />
@@ -364,7 +360,6 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Street / Ward / Area" 
                     variant="bordered"
-                    isRequired
                     className="text-white"
                      
                   />
@@ -380,7 +375,6 @@ export default function CreateDonationRequest() {
                   <Label className="text-default-400">Required Date</Label>
                   <Input 
                     variant="bordered"
-                    isRequired
                     className="text-[#669bbc]"
                   />
                   <FieldError />
@@ -395,7 +389,6 @@ export default function CreateDonationRequest() {
                   <Label className="text-default-400">Required Time</Label>
                   <Input 
                     variant="bordered"
-                    isRequired
                     className="text-[#669bbc]"
                   />
                   <FieldError />
@@ -418,7 +411,6 @@ export default function CreateDonationRequest() {
                 <TextArea 
                   placeholder="Provide any additional details or special instructions"
                   variant="bordered"
-                  isRequired
                   className="text-default-400 min-h-30"
                 />
                 <FieldError />

@@ -9,13 +9,13 @@ export default async function DonationRequestsPage() {
       'content-type': 'application/json'
     }
   })
-  const appointments = await res.json()
+  const bloodRequests = await res.json()
 
   return (
     <div className="min-h-screen bg-black text-white p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-bold mb-6">My Donation Requests</h1>
-        <RequestCards appointments={appointments} />
+        <RequestCards bloodRequests={bloodRequests} />
       </div>
     </div>
   );

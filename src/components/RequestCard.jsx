@@ -32,8 +32,8 @@ function formatDateTime(dateStr, timeStr) {
   return timePart ? `${datePart} · ${timePart}` : datePart;
 }
 
-export default function RequestCards({ appointments }) {
-  if (!appointments || appointments.length === 0) {
+export default function RequestCards({ bloodRequests }) {
+  if (!bloodRequests || bloodRequests.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 rounded-xl border border-default-200/20 py-16 text-center">
         <Icon icon="mdi:water-off-outline" className="text-3xl text-slate-500" />
@@ -44,7 +44,7 @@ export default function RequestCards({ appointments }) {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {appointments.map((req) => {
+      {bloodRequests.map((req) => {
         const urgency = getUrgency(req.requiredDate, req.requiredTime);
         const tone = TONE_STYLES[urgency.tone];
         const group = req.bloodGroup || '?';
