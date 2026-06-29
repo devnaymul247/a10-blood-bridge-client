@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Card, ListBox, Separator } from "@heroui/react";
 
@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth-client";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiArrowUpTray } from "react-icons/hi2";
+import { Icon } from "@iconify/react";
 
 const SignUpPage = () => {
     const router = useRouter();
@@ -28,6 +29,46 @@ const SignUpPage = () => {
     const [photoUrl, setPhotoUrl] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // District and Upazila states
+    const [districts, setDistricts] = useState([]);
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedDistrictName, setSelectedDistrictName] = useState('');
+    const [selectedUpazilaName, setSelectedUpazilaName] = useState('');
+    const [allUpazilas, setAllUpazilas] = useState([]);
+
+    // Load districts and upazilas from JSON files
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                // Load districts
+                const districtResponse = await fetch('/districts.json');
+                const districtData = await districtResponse.json();
+                const districtsList = districtData[2]?.data || [];
+                setDistricts(districtsList);
+
+                // Load all upazilas
+                const upazilaResponse = await fetch('/upazilas.json');
+                const upazilaData = await upazilaResponse.json();
+                const upazilasList = upazilaData[2]?.data || [];
+                setAllUpazilas(upazilasList);
+            } catch (error) {
+                console.error('Error loading location data:', error);
+            }
+        };
+
+        loadData();
+    }, []);
+
+    // Filter upazilas when district changes
+    const upazilas = useMemo(() => {
+        if (selectedDistrict) {
+            return allUpazilas.filter(
+                (upazila) => upazila.district_id === String(selectedDistrict)
+            );
+        }
+        return [];
+    }, [selectedDistrict, allUpazilas]);
 
     const handlePhotoUpload = async (e) => {
         const file = e.target.files[0];
@@ -72,16 +113,31 @@ const SignUpPage = () => {
 
         const formData = new FormData(e.currentTarget);
         const user = Object.fromEntries(formData.entries());
+        const payload = {
+            ...user,
+            district: selectedDistrictName || user.district,
+            upazila: selectedUpazilaName || user.upazila,
+        };
 
-        console.log(user);
+        console.log(payload);
         // Validate confirm password
-        if (user.password !== user.confirmPassword) {
+        if (payload.password !== payload.confirmPassword) {
             setValidationError("Passwords do not match");
             return;
         }
 
-        if (!user.bloodGroup) {
+        if (!payload.bloodGroup) {
             setValidationError("Please select a blood group");
+            return;
+        }
+
+        if (!payload.district) {
+            setValidationError("Please select a district");
+            return;
+        }
+
+        if (!payload.upazila) {
+            setValidationError("Please select an upazila");
             return;
         }
 
@@ -89,17 +145,19 @@ const SignUpPage = () => {
 
         try {
             const { data, error } = await authClient.signUp.email({
-                email: user.email,
-                password: user.password,
-                name: user.name,
-                image: user.image,
-                bloodGroup: user.bloodGroup,
+                email: payload.email,
+                password: payload.password,
+                name: payload.name,
+                image: payload.image,
+                bloodGroup: payload.bloodGroup,
+                district: payload.district,
+                upazila: payload.upazila,
                 photo: photoUrl, // Include the uploaded photo URL in the user data
             });
             console.log(data, error);
 
             if (data) {
-                // router.push("/");
+                router.push("/");
             }
 
             if (error) {
@@ -222,6 +280,85 @@ const SignUpPage = () => {
                             </ListBox>
                         </Select.Popover>
                         <Description>Select your blood group</Description>
+                    </Select>
+
+                    <Select
+                        isRequired
+                        name="district"
+                        placeholder="Select your district"
+                        className="w-full"
+                        onSelectionChange={(key) => {
+                            const selectedValue = key ? String(key) : '';
+                            setSelectedDistrict(selectedValue);
+                            const district = districts.find((item) => String(item.id) === selectedValue);
+                            setSelectedDistrictName(district?.name || '');
+                            setSelectedUpazilaName('');
+                        }}
+                    >
+                        <Label>District</Label>
+                        <Select.Trigger>
+                            <Select.Value />
+                            <Select.Indicator />
+                        </Select.Trigger>
+                        <Select.Popover>
+                            <ListBox>
+                                {districts.map((d) => (
+                                    <ListBox.Item 
+                                        key={d.id} 
+                                        id={String(d.id)} 
+                                        textValue={d.name}
+                                    >
+                                        {d.name}
+                                        <ListBox.ItemIndicator />
+                                    </ListBox.Item>
+                                ))}
+                            </ListBox>
+                        </Select.Popover>
+                        <Description>Select your district</Description>
+                    </Select>
+
+                    <Select
+                        isRequired
+                        name="upazila"
+                        placeholder="Select your upazila"
+                        className="w-full"
+                        isDisabled={!selectedDistrict}
+                        onSelectionChange={(key) => {
+                            const selectedValue = key ? String(key) : '';
+                            setSelectedUpazilaName(selectedValue);
+                        }}
+                    >
+                        <Label>Upazila</Label>
+                        <Select.Trigger>
+                            <Select.Value />
+                            <Select.Indicator />
+                        </Select.Trigger>
+                        <Select.Popover>
+                            <ListBox>
+                                {upazilas.length > 0 ? (
+                                    upazilas.map((u) => (
+                                        <ListBox.Item 
+                                            key={u.id} 
+                                            id={u.name} 
+                                            textValue={u.name}
+                                        >
+                                            {u.name}
+                                            <ListBox.ItemIndicator />
+                                        </ListBox.Item>
+                                    ))
+                                ) : (
+                                    <ListBox.Item 
+                                        key="empty" 
+                                        id="empty" 
+                                        textValue="Select a district first"
+                                        isDisabled
+                                    >
+                                        Select a district first
+                                    </ListBox.Item>
+                                )}
+                            </ListBox>
+                        </Select.Popover>
+                        <Description>Select your upazila</Description>
                     </Select>
 
                     <TextField

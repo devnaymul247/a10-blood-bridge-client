@@ -1,11 +1,22 @@
-import React from 'react';
+import RequestCards from "@/components/RequestCard";
 
-const donorMyRequestPage = () => {
-    return (
-        <div className='text-white'>
-            Donor My Requests Page
-        </div>
-    );
-};
 
-export default donorMyRequestPage;
+// Server Component — fetch runs on the server at request time.
+export default async function DonationRequestsPage() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/donor/my-requests`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+  const appointments = await res.json()
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="text-2xl font-bold mb-6">My Donation Requests</h1>
+        <RequestCards appointments={appointments} />
+      </div>
+    </div>
+  );
+}

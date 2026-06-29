@@ -29,6 +29,14 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
+      district: {
+        type: "string",
+        required: false,
+      },
+      upazila: {
+        type: "string",
+        required: false,
+      },
     }
   },
 });

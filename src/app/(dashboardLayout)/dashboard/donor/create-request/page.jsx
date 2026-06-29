@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Card, 
   Button, 
@@ -11,23 +11,9 @@ import {
   Select,
   ListBox,
   TextArea,
+  toast,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
-
-// Mock data for demonstration
-const DISTRICTS = [
-  { value: 'dhaka', label: 'Dhaka' },
-  { value: 'noakhali', label: 'Noakhali' },
-  { value: 'chittagong', label: 'Chittagong' },
-  { value: 'sylhet', label: 'Sylhet' },
-];
-
-const UPAZILAS = [
-  { value: 'sadar', label: 'Sadar' },
-  { value: 'begumganj', label: 'Begumganj' },
-  { value: 'chatkhil', label: 'Chatkhil' },
-  { value: 'sonaimuri', label: 'Sonaimuri' },
-];
 
 const BLOOD_GROUPS = [
   { value: 'A+', label: 'A+' },
@@ -41,13 +27,92 @@ const BLOOD_GROUPS = [
 ];
 
 export default function CreateDonationRequest() {
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedDistrictName, setSelectedDistrictName] = useState('');
+  const [selectedUpazilaName, setSelectedUpazilaName] = useState('');
+  const [allUpazilas, setAllUpazilas] = useState([]);
+  const [validationMessage, setValidationMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  // Load districts and upazilas from JSON files
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load districts
+        const districtResponse = await fetch('/districts.json');
+        const districtData = await districtResponse.json();
+        const districtsList = districtData[2]?.data || [];
+        setDistricts(districtsList);
+
+        // Load all upazilas
+        const upazilaResponse = await fetch('/upazilas.json');
+        const upazilaData = await upazilaResponse.json();
+        const upazilasList = upazilaData[2]?.data || [];
+        setAllUpazilas(upazilasList);
+      } catch (error) {
+        console.error('Error loading location data:', error);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // Filter upazilas when district changes
+  const upazilas = useMemo(() => {
+    if (selectedDistrict) {
+      return allUpazilas.filter(
+        (upazila) => upazila.district_id === String(selectedDistrict)
+      );
+    }
+    return [];
+  }, [selectedDistrict, allUpazilas]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationMessage('');
 
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const formInputData = Object.fromEntries(formData.entries());
+    const payload = {
+      ...formInputData,
+      district: selectedDistrictName || formInputData.district || '',
+      upazila: selectedUpazilaName || formInputData.upazila || '',
+    };
+
+    const requiredFields = {
+      requesterName: payload.requesterName?.trim(),
+      requesterEmail: payload.requesterEmail?.trim(),
+      recipientName: payload.recipientName?.trim(),
+      bloodGroup: payload.bloodGroup?.trim(),
+      district: payload.district?.trim(),
+      upazila: payload.upazila?.trim(),
+      hospitalName: payload.hospitalName?.trim(),
+      hospitalAddress: payload.hospitalAddress?.trim(),
+      requiredDate: payload.requiredDate?.trim(),
+      requiredTime: payload.requiredTime?.trim(),
+      requestMessage: payload.requestMessage?.trim(),
+    };
+
+    const missingField = Object.entries(requiredFields).find(([, value]) => !value);
+    if (missingField) {
+      setValidationMessage('Please fill in all required fields.');
+      return;
+    }
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/donor/create-request`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        // "authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
     console.log(data);
+
+    if (data) {
+        toast.success("Donation request created successfully!");
+    }
   };
 
   return (
@@ -68,6 +133,11 @@ export default function CreateDonationRequest() {
         </div>
         <Separator className="bg-default-200/20" />
         <div className="px-6 py-6">
+          {validationMessage && (
+            <div className="mb-4 rounded border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {validationMessage}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Requester Info */}
             <section>
@@ -77,6 +147,7 @@ export default function CreateDonationRequest() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField 
+                  isRequired
                   name="requesterName"
                   className="w-full"
                 >
@@ -84,12 +155,14 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter your full name" 
                     variant="bordered"
-                    className="text-white"
+                    isRequired
+                    className="text-default-400"
                   />
                   <FieldError />
                 </TextField>
                 
                 <TextField 
+                  isRequired
                   name="requesterEmail"
                   className="w-full"
                 >
@@ -97,7 +170,8 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter your email" 
                     variant="bordered"
-                    className="text-white"
+                    isRequired
+                    className="text-default-400"
                   />
                   <FieldError />
                 </TextField>
@@ -112,6 +186,7 @@ export default function CreateDonationRequest() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField 
+                  isRequired
                   name="recipientName"
                   className="w-full"
                 >
@@ -119,13 +194,15 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter full name" 
                     variant="bordered"
-                    className="text-white"
+                    isRequired
+                    className="text-default-400"
                   />
                   <FieldError />
                 </TextField>
 
                 {/* Blood Group Select - Hero UI v3: value/onChange, not selectedKeys/onSelectionChange */}
                 <Select 
+                  isRequired
                   placeholder="Select Group"
                   className="w-full"
                   name='bloodGroup'
@@ -161,9 +238,17 @@ export default function CreateDonationRequest() {
 
                 {/* District Select - Hero UI v3 */}
                 <Select
+                  isRequired
                   placeholder="Select District"
                   className="w-full"
                   name='district'
+                  onSelectionChange={(key) => {
+                    const selectedValue = key ? String(key) : '';
+                    setSelectedDistrict(selectedValue);
+                    const district = districts.find((item) => String(item.id) === selectedValue);
+                    setSelectedDistrictName(district?.name || '');
+                    setSelectedUpazilaName('');
+                  }}
                 >
                   <Label className="text-default-400">District</Label>
                   <Select.Trigger className="bg-transparent border border-default-200/30 rounded-lg px-3 py-2">
@@ -174,16 +259,16 @@ export default function CreateDonationRequest() {
                   </Select.Trigger>
                   <Select.Popover className="bg-black border border-default-200/20">
                     <ListBox className="text-white">
-                      {DISTRICTS.map((d) => (
+                      {districts.map((d) => (
                         <ListBox.Item 
-                          key={d.value} 
-                          id={d.value} 
-                          textValue={d.label}
+                          key={d.id} 
+                          id={String(d.id)} 
+                          textValue={d.name}
                           className="hover:bg-red-200/10 data-[selected=true]:bg-primary-500/20"
                         >
                           <div className="flex items-center gap-2">
                             <Icon icon="mdi:map-marker" className="text-default-400" />
-                            {d.label}
+                            {d.name}
                           </div>
                           <ListBox.ItemIndicator>
                             <Icon icon="mdi:check" className="text-primary-500" />
@@ -196,9 +281,14 @@ export default function CreateDonationRequest() {
 
                 {/* Upazila Select - Hero UI v3 */}
                 <Select
+                  isRequired
                   placeholder="Select Upazila"
                   className="w-full"
                   name='upazila'
+                  isDisabled={!selectedDistrict}
+                  onSelectionChange={(key) => {
+                    setSelectedUpazilaName(key ? String(key) : '');
+                  }}
                 >
                   <Label className="text-default-400">Upazila</Label>
                   <Select.Trigger className="bg-transparent border border-default-200/30 rounded-lg px-3 py-2">
@@ -209,22 +299,34 @@ export default function CreateDonationRequest() {
                   </Select.Trigger>
                   <Select.Popover className="bg-black border border-default-200/20">
                     <ListBox className="text-white">
-                      {UPAZILAS.map((u) => (
+                      {upazilas.length > 0 ? (
+                        upazilas.map((u) => (
+                          <ListBox.Item 
+                            key={u.id} 
+                            id={u.name} 
+                            textValue={u.name}
+                            className="hover:bg-red-200/10 data-[selected=true]:bg-primary-500/20"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon icon="mdi:map-marker-radius" className="text-default-400" />
+                              {u.name}
+                            </div>
+                            <ListBox.ItemIndicator>
+                              <Icon icon="mdi:check" className="text-primary-500" />
+                            </ListBox.ItemIndicator>
+                          </ListBox.Item>
+                        ))
+                      ) : (
                         <ListBox.Item 
-                          key={u.value} 
-                          id={u.value} 
-                          textValue={u.label}
-                          className="hover:bg-red-200/10 data-[selected=true]:bg-primary-500/20"
+                          key="empty" 
+                          id="empty" 
+                          textValue="Select a district first"
+                          isDisabled
+                          className="text-default-400"
                         >
-                          <div className="flex items-center gap-2">
-                            <Icon icon="mdi:map-marker-radius" className="text-default-400" />
-                            {u.label}
-                          </div>
-                          <ListBox.ItemIndicator>
-                            <Icon icon="mdi:check" className="text-primary-500" />
-                          </ListBox.ItemIndicator>
+                          Select a district first
                         </ListBox.Item>
-                      ))}
+                      )}
                     </ListBox>
                   </Select.Popover>
                 </Select>
@@ -239,6 +341,7 @@ export default function CreateDonationRequest() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField 
+                  isRequired
                   name="hospitalName"
                   className="w-full"
                 >
@@ -246,12 +349,14 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Enter hospital name" 
                     variant="bordered"
-                    className="text-white"
+                    isRequired
+                    className="text-default-400"
                   />
                   <FieldError />
                 </TextField>
 
                 <TextField 
+                  isRequired
                   name="hospitalAddress"
                   className="w-full"
                 >
@@ -259,6 +364,7 @@ export default function CreateDonationRequest() {
                   <Input 
                     placeholder="Street / Ward / Area" 
                     variant="bordered"
+                    isRequired
                     className="text-white"
                      
                   />
@@ -266,6 +372,7 @@ export default function CreateDonationRequest() {
                 </TextField>
 
                 <TextField 
+                  isRequired
                   name="requiredDate"
                   type="date"
                   className="w-full"
@@ -273,12 +380,14 @@ export default function CreateDonationRequest() {
                   <Label className="text-default-400">Required Date</Label>
                   <Input 
                     variant="bordered"
+                    isRequired
                     className="text-[#669bbc]"
                   />
                   <FieldError />
                 </TextField>
 
                 <TextField 
+                  isRequired
                   name="requiredTime"
                   type="time"
                   className="w-full"
@@ -286,6 +395,7 @@ export default function CreateDonationRequest() {
                   <Label className="text-default-400">Required Time</Label>
                   <Input 
                     variant="bordered"
+                    isRequired
                     className="text-[#669bbc]"
                   />
                   <FieldError />
@@ -300,6 +410,7 @@ export default function CreateDonationRequest() {
                 Request Message
               </h2>
               <TextField 
+                isRequired
                 name="requestMessage"
                 className="w-full"
               >
@@ -307,7 +418,8 @@ export default function CreateDonationRequest() {
                 <TextArea 
                   placeholder="Provide any additional details or special instructions"
                   variant="bordered"
-                  className="text-red-400 min-h-[120px]"
+                  isRequired
+                  className="text-default-400 min-h-30"
                 />
                 <FieldError />
               </TextField>

@@ -1,6 +1,7 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { Toast } from "@heroui/react";
 
 const OutfitFont = Outfit({
   variable: "--font-geist-sans",
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
         <main>
           {children}
         </main>
+        <Toast.Provider />
         
       </body>
     </html>
