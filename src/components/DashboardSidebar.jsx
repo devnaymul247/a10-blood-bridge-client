@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaPlus, FaSignInAlt, FaSignOutAlt, FaTicketAlt, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
+import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaList, FaPlus, FaSignInAlt, FaSignOutAlt, FaTicketAlt, FaUser, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
 
 
 const DashboardSideBar = () => {
@@ -18,11 +18,10 @@ const DashboardSideBar = () => {
 
 
   const donorMenu = [
-    { key: "overview", label: "Overview", icon: FaUsers, href: "/dashboard/donor" },
-    { key: "organization", label: "Organization", icon: FaBuilding, href: "/dashboard/donor/organization" },
-    { key: "add-event", label: "Add Event", icon: FaPlus, href: "/dashboard/donor/add-event" },
-    { key: "manage-events", label: "Manage Events", icon: FaCalendarAlt, href: "/dashboard/donor/manage-events" },
-    { key: "attendees", label: "Attendees", icon: FaUsers, href: "/dashboard/donor/attendees" },
+    { key: "overview", label: "Overview", icon: FaList, href: "/dashboard/donor" },
+    { key: "profile", label: "Profile", icon: FaUser, href: "/dashboard/donor/profile" },
+    { key: "my-requests", label: "My Requests", icon: FaHistory, href: "/dashboard/donor/my-requests" },
+    { key: "create-request", label: "Create Request", icon: FaPlus, href: "/dashboard/donor/create-request" },
   ]
 
   const volunteerMenu = [
