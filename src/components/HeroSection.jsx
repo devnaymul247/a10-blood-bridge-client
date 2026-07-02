@@ -46,26 +46,26 @@ export default function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              as={Link}
-              href="/register"
-              size="lg"
-              radius="full"
-              className="bg-[#c1121f] hover:bg-[#780000] font-semibold"
-            ><FaHeartbeat />
-              Become A Donor
-            </Button>
+            <Link href="/signup" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                radius="full"
+                className="bg-[#c1121f] hover:bg-[#780000] font-semibold"
+              ><FaHeartbeat />
+                Become A Donor
+              </Button>
+            </Link>
 
-            <Button
-              as={Link}
-              href="/search"
-              variant="bordered"
-              size="lg"
-              radius="full"
-              className="border-white text-white bg-white/10 hover:bg-white/30"
-            ><FiSearch />
-              Search Donors
-            </Button>
+            <Link href="/search" className="w-full sm:w-auto">
+              <Button
+                variant="bordered"
+                size="lg"
+                radius="full"
+                className="border-white text-white bg-white/10 hover:bg-white/30"
+              ><FiSearch />
+                Search Donors
+              </Button>
+            </Link>
           </div>
         </div>
 

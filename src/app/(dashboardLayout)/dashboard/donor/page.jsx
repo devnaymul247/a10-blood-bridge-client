@@ -25,7 +25,7 @@ const OrganizerOverviewPage = async () => {
                     <div className="p-6 flex flex-row items-center justify-between">
                         <div className="space-y-1">
                             <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Blood Requests</span>
-                            <h2 className="text-3xl font-extrabold text-black/75">{stats.totalBloodRequests}</h2>
+                            <h2 className="text-3xl font-extrabold">{stats.totalBloodRequests}</h2>
                         </div>
                         <div className="p-3.5 bg-pink-500/10 text-pink-400 rounded-2xl border border-pink-500/20"><FaList size={24} /></div>
                     </div>
@@ -34,7 +34,7 @@ const OrganizerOverviewPage = async () => {
                     <div className="p-6 flex flex-row items-center justify-between">
                         <div className="space-y-1">
                             <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Fund</span>
-                            <h2 className="text-3xl font-extrabold text-black/75">{`$${stats.totalFund.toFixed(2)}`}</h2>
+                            <h2 className="text-3xl font-extrabold ">{`$${stats.totalFund.toFixed(2)}`}</h2>
                         </div>
                         <div className="p-3.5 bg-green-500/10 text-green-400 rounded-2xl border border-green-500/20"><FaDollarSign size={24} /></div>
                     </div>
@@ -43,7 +43,7 @@ const OrganizerOverviewPage = async () => {
                     <div className="p-6 flex flex-row items-center justify-between">
                         <div className="space-y-1">
                             <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Volunteer</span>
-                            <h2 className="text-3xl font-extrabold text-black/75">{stats.totalVolunteers}</h2>
+                            <h2 className="text-3xl font-extrabold">{stats.totalVolunteers}</h2>
                         </div>
                         <div className="p-3.5 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20"><FaUsers size={24} /></div>
                     </div>

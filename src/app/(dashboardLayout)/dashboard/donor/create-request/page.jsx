@@ -77,6 +77,7 @@ export default function CreateDonationRequest() {
       ...formInputData,
       district: selectedDistrictName || formInputData.district || '',
       upazila: selectedUpazilaName || formInputData.upazila || '',
+      status: 'pending', // Default status for new requests
     };
 
     const requiredFields = {

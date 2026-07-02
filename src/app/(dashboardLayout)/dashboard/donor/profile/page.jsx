@@ -1,11 +1,18 @@
+import { auth } from '@/lib/auth';
+import DonorProfileEditor from './DonorProfileEditor';
+import { headers } from 'next/headers';
 
+export default async function DonorProfilePage({ params }) {
+  // it's for server component.
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    const donorUser = session?.user;
+    console.log(donorUser);
 
-const donorProfilePage = () => {
-    return (
-        <div className='text-white'>
-            Donor Profile Page
-        </div>
-    );
-};
-
-export default donorProfilePage;
+  return (
+    <div>
+        <DonorProfileEditor donor={donorUser} />
+    </div>
+  )
+}

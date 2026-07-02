@@ -24,6 +24,7 @@ const Navbar = () => {
 
     const userData = authClient.useSession();
     const user = userData?.data?.user;
+    console.log("User data in Navbar:", user);
 
     useEffect(() => {
     function handleClickOutside(event) {
@@ -108,7 +109,7 @@ const Navbar = () => {
                             <Avatar size="sm">
                                 <Avatar.Image
                                     alt="John Doe"
-                                    src={user?.image}
+                                    src={user?.photo}
                                     referrerPolicy="no-referrer"
                                 />
                                 <Avatar.Fallback>{user?.name.charAt(0)}</Avatar.Fallback>
@@ -137,7 +138,7 @@ const Navbar = () => {
                   </Link>
 
                   <Link
-                    href={`/dashboard/${user.role}`}
+                    href={`/dashboard/${user.role}/profile`}
                     onClick={() => setDropdownOpen(false)}
                     className="w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition cursor-pointer"
                   >

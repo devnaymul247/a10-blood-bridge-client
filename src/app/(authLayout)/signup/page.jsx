@@ -18,6 +18,7 @@ import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiArrowUpTray } from "react-icons/hi2";
 import { Icon } from "@iconify/react";
+import Image from "next/image";
 
 const SignUpPage = () => {
     const router = useRouter();
@@ -201,9 +202,9 @@ const SignUpPage = () => {
                                         className="hidden" 
                                     />
                                     {photoUrl ? (
-                                        <img src={photoUrl} alt="Photo Preview" className="w-full h-full object-cover" />
+                                        <Image src={photoUrl} alt="Photo Preview" className="w-full h-full object-cover" width={56} height={56} />
                                     ) : (
-                                        <HiArrowUpTray size={18} className="text-zinc-400 group-hover:text-zinc-200 transition-colors" />
+                                        <HiArrowUpTray size={18} className="text-zinc-400 transition-colors" />
                                     )}
                                 </label>
                                 <div className="flex flex-col">

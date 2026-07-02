@@ -1,13 +1,15 @@
 'use client';
 import Logo from "@/components/Logo";
 import { authClient } from "@/lib/auth-client";
-import { toast } from "@heroui/react";
+import { Button, toast, useTheme } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaList, FaPlus, FaSignInAlt, FaSignOutAlt, FaTicketAlt, FaUser, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
+import { FaBuilding, FaCalendarAlt, FaHistory, FaHome, FaList, FaMoon, FaPlus, FaSignInAlt, FaSignOutAlt, FaTicketAlt, FaUser, FaUserCircle, FaUsers, FaUserShield } from "react-icons/fa";
+import { FiSun } from "react-icons/fi";
 
 
 const DashboardSideBar = () => {
+  const { theme, setTheme } = useTheme();
   const { data: session } = authClient.useSession();
 
   const handleLogout = async () => {
@@ -55,7 +57,7 @@ const DashboardSideBar = () => {
               <Image
                 width={50}
                 height={50}
-                src={session?.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session?.user?.name)}&background=8FA1B9&color=000&bold=true`}
+                src={session?.user?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(session?.user?.name)}&background=8FA1B9&color=000&bold=true`}
                 alt="Avatar"
                 className="object-cover w-full h-full"
               />
@@ -96,33 +98,37 @@ const DashboardSideBar = () => {
         </nav>
 
         {/* Bottom Links */}
-        <div className="px-3 py-4 border-t border-white/10 space-y-1">
+        <div className="px-3 py-4 border-t border-white/10 space-y-2">
+          <Button className="ml-4" size="sm" variant="tertiary" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            {theme === "dark" ? <FiSun /> : <FaMoon />} {theme === "dark" ? "Light" : "Dark"} Mode
+          </Button>
+
           <Link href="/" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150">
             <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
               <FaHome size={13} />
             </span>
             Back to Site
           </Link>
-          
+
           {
             session ? (
-                <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-150 cursor-pointer"
-          >
-            <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-              <FaSignOutAlt size={13} />
-            </span>
-            Sign Out
-          </button>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-all duration-150 cursor-pointer"
+              >
+                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                  <FaSignOutAlt size={13} />
+                </span>
+                Sign Out
+              </button>
             ) : (
-                <Link href="/signin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150">
+              <Link href="/signin" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150">
 
-            <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-              <FaSignInAlt size={13} />
-            </span>
-                  Sign In
-                </Link>
+                <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                  <FaSignInAlt size={13} />
+                </span>
+                Sign In
+              </Link>
             )
           }
         </div>
