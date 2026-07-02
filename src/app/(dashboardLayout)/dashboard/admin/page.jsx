@@ -6,10 +6,22 @@ import { Card, Button } from "@heroui/react";
 import { FaCrown, FaUsers, FaDollarSign, FaList } from "react-icons/fa"
 
 const OrganizerOverviewPage = async () => {
+    // to fetch the total number of users from the server
+    const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/admin/users`,
+    {
+      method: 'GET',
+      headers: { 'content-type': 'application/json' },
+      cache: 'no-store',
+    }
+  );
+  const data = await res.json();
+  const users = Array.isArray(data) ? data : data?.data || [];
+
     const stats = {
         totalBloodRequests: 150,
         totalFund: 2450,
-        totalVolunteers: 250,
+        totalUsers: users.length,
     };
 
     const user = await getUser();
@@ -41,8 +53,8 @@ const OrganizerOverviewPage = async () => {
                 <Card className="glass border-white/5" radius="lg">
                     <div className="p-6 flex flex-row items-center justify-between">
                         <div className="space-y-1">
-                            <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Volunteer</span>
-                            <h2 className="text-3xl font-extrabold">{stats.totalVolunteers}</h2>
+                            <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Users</span>
+                            <h2 className="text-3xl font-extrabold">{stats.totalUsers}</h2>
                         </div>
                         <div className="p-3.5 bg-indigo-500/10 text-indigo-400 rounded-2xl border border-indigo-500/20"><FaUsers size={24} /></div>
                     </div>
