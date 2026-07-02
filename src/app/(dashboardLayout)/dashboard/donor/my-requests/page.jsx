@@ -1,5 +1,6 @@
 
 import MyRequestCard from "@/components/MyRequestCard";
+import MyRequestTable from "@/components/MyRequestTable";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -23,8 +24,7 @@ export default async function DonationRequestsPage() {
   return (
     <div className="min-h-screen bg-black text-white p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-2xl font-bold mb-6">My Donation Requests</h1>
-        <MyRequestCard bloodRequests={bloodRequests} />
+        <MyRequestTable bloodRequests={bloodRequests} />
       </div>
     </div>
   );
