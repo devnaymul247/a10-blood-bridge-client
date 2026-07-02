@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       data-theme="light"
     >
-      <body className="min-h-full flex flex-col">
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
         <main>
           {children}
         </main>

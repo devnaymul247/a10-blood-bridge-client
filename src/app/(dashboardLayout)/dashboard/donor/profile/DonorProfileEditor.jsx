@@ -102,25 +102,26 @@ export default function DonorProfileEditor({ donor }) {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
         const name = e.target.name.value;
-        // const district = e.target.district.value;
-        // const upazila = e.target.upazila.value;
+        const bloodGroup = e.target.bloodGroup.value;
+        const district = e.target.district.value;
+        const upazila = e.target.upazila.value;
 
-        console.log({ name });
+        console.log({ name, bloodGroup, district, upazila });
 
         const result = await authClient.updateUser({
             name,
-            // bloodGroup,
-            // district,
-            // upazila,
+            bloodGroup,
+            district,
+            upazila,
         });
+        console.log('Update result:', result);
 
         if (result?.data) {
             toast.success("Profile updated successfully");
             setIsEditing(false);
         } else if (result?.error) {
-            toast.error("Error updating profile:");
+            toast.error("Error updating profile: " + result.error.message);
             // console.error("Error updating profile:", result.error);
         }
 
@@ -144,7 +145,7 @@ export default function DonorProfileEditor({ donor }) {
           </div>
           {isEditing ? (
             <div className="flex gap-3">
-              <Button variant="flat" color="default" isDisabled={isSaving} onPress={handleCancel} className="font-medium">
+              <Button variant="flat" isDisabled={isSaving} onPress={handleCancel} className="font-medium text-gray-500 hover:text-gray-700">
                 Cancel
               </Button>
               <Button color="danger" isLoading={isSaving} type="submit"  className="font-semibold">
@@ -219,7 +220,7 @@ export default function DonorProfileEditor({ donor }) {
                   Personal Information
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <TextField isDisabled={!isEditing} value={fullName} onChange={setFullName}>
+                  <TextField name='name' isDisabled={!isEditing} value={fullName} onChange={setFullName}>
                     <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Full Name</Label>
                     <Input className={`rounded-lg text-sm ${isEditing ? 'border border-red-200 bg-white' : 'border border-transparent bg-slate-50'} text-black`} />
                     <FieldError />
@@ -229,7 +230,6 @@ export default function DonorProfileEditor({ donor }) {
                     <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Email (Fixed)</Label>
                     <Input
                       className="rounded-lg border border-transparent bg-slate-50 text-sm text-slate-400"
-                      endContent={<Icon icon="mdi:lock-outline" className="text-slate-400" />}
                     />
                   </TextField>
                 </div>
@@ -248,15 +248,16 @@ export default function DonorProfileEditor({ donor }) {
                   {/* District — copied exactly from create-request page */}
                   {isEditing ? (
                     <Select
+                        defaultValue={donor?.district}
                         name="district"
                       placeholder="Select District"
                       className="w-full"
-                      onSelectionChange={(key) => {
+                      onChange={(key) => {
                         const selectedValue = key ? String(key) : '';
                         setSelectedDistrict(selectedValue);
                         const district = districts.find((item) => String(item.id) === selectedValue);
                         setSelectedDistrictName(district?.name || '');
-                        setSelectedUpazilaName('');
+                        setSelectedUpazilaName(''); // Reset upazila when district changes
                       }}
                     >
                       <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">District</Label>
@@ -267,13 +268,13 @@ export default function DonorProfileEditor({ donor }) {
                         </Select.Indicator>
                       </Select.Trigger>
                       <Select.Popover className="border border-slate-200 bg-white">
-                        <ListBox>
+                        <ListBox className='bg-gray-200'>
                           {districts.map((d) => (
                             <ListBox.Item
                               key={d.id}
-                              id={String(d.id)}
+                              id={d.name}
                               textValue={d.name}
-                              className="hover:bg-red-50"
+                              className="hover:bg-red-50 text-black"
                             >
                               <div className="flex items-center gap-2">
                                 <Icon icon="mdi:map-marker" className="text-slate-400" />
@@ -297,13 +298,15 @@ export default function DonorProfileEditor({ donor }) {
                   {/* Upazila — copied exactly from create-request page */}
                   {isEditing ? (
                     <Select
+                        defaultValue={donor?.upazila}
                         name="upazila"
                       placeholder="Select Upazila"
                       className="w-full"
                       isDisabled={!selectedDistrict}
                       onSelectionChange={(key) => {
-                        setSelectedUpazilaName(key ? String(key) : '');
-                      }}
+                            const selectedValue = key ? String(key) : '';
+                            setSelectedUpazilaName(selectedValue);
+                        }}
                     >
                       <Label className="text-xs font-semibold uppercase tracking-wide text-slate-400">Upazila</Label>
                       <Select.Trigger className="bg-white border border-red-200 rounded-lg px-3 py-2 text-sm text-black">
@@ -320,7 +323,7 @@ export default function DonorProfileEditor({ donor }) {
                                 key={u.id}
                                 id={u.name}
                                 textValue={u.name}
-                                className="hover:bg-red-50"
+                                className="hover:bg-red-50 text-black"
                               >
                                 <div className="flex items-center gap-2">
                                   <Icon icon="mdi:map-marker-radius" className="text-slate-400" />
@@ -362,10 +365,12 @@ export default function DonorProfileEditor({ donor }) {
                 {/* Blood group — same Select pattern */}
                 {isEditing ? (
                   <Select
+                    defaultValue={bloodGroup}
+                    label="Blood Group"
                     name="bloodGroup"
                     placeholder="Select Group"
                     className="w-full mt-1"
-                    onSelectionChange={(key) => {
+                    onChange={(key) => {
                       setBloodGroup(key ? String(key) : '');
                     }}
                   >

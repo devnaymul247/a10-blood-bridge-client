@@ -68,7 +68,6 @@ export default function CreateDonationRequest() {
   }, [selectedDistrict, allUpazilas]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     setValidationMessage('');
 
     const formData = new FormData(e.currentTarget);
@@ -198,7 +197,7 @@ export default function CreateDonationRequest() {
                   <FieldError />
                 </TextField>
 
-                {/* Blood Group Select - Hero UI v3: value/onChange, not selectedKeys/onSelectionChange */}
+                {/* Blood Group Select - Hero UI v3: value/onChange, not selectedKeys/onChange */}
                 <Select 
                   isRequired
                   placeholder="Select Group"
@@ -240,7 +239,7 @@ export default function CreateDonationRequest() {
                   placeholder="Select District"
                   className="w-full"
                   name='district'
-                  onSelectionChange={(key) => {
+                  onChange={(key) => {
                     const selectedValue = key ? String(key) : '';
                     setSelectedDistrict(selectedValue);
                     const district = districts.find((item) => String(item.id) === selectedValue);
@@ -284,7 +283,7 @@ export default function CreateDonationRequest() {
                   className="w-full"
                   name='upazila'
                   isDisabled={!selectedDistrict}
-                  onSelectionChange={(key) => {
+                  onChange={(key) => {
                     setSelectedUpazilaName(key ? String(key) : '');
                   }}
                 >
