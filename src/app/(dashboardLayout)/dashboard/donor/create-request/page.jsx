@@ -102,7 +102,7 @@ export default function CreateDonationRequest() {
       setValidationMessage('Please fill in all required fields.');
       return;
     }
-
+    console.log('Submitting payload:', payload);
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/donor/create-request`, {
       method: 'POST',
       headers: {
@@ -112,7 +112,7 @@ export default function CreateDonationRequest() {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    console.log(data);
+    console.log('Response data:', data);
 
     if (data) {
         toast.success("Donation request created successfully!");
@@ -151,8 +151,8 @@ export default function CreateDonationRequest() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField 
-                  isDisabled
-                  value={user?.name || ''}
+                isRequired
+                  value={user?.name}
                   name="requesterName"
                   className="w-full"
                 >
@@ -166,8 +166,8 @@ export default function CreateDonationRequest() {
                 </TextField>
                 
                 <TextField 
-                  isDisabled
-                  value={user?.email || ''}
+                isRequired
+                  value={user?.email}
                   name="requesterEmail"
                   className="w-full"
                 >
@@ -425,7 +425,7 @@ export default function CreateDonationRequest() {
             {/* Action Buttons */}
             <Separator className="bg-default-200/20" />
             <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
-              <Button
+              {/* <Button
                 type="button"
                 variant="flat"
                 color="default"
@@ -435,7 +435,7 @@ export default function CreateDonationRequest() {
                 }}
               >
                 Cancel
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
                 color="danger"

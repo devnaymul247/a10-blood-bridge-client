@@ -15,7 +15,6 @@ export default function RootLayout({ children }) {
         <div>
           {children}
         </div>
-        <Toast.Provider />
         <Footer />
       </>
   );
