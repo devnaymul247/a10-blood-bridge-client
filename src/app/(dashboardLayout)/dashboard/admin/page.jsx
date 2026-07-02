@@ -13,7 +13,6 @@ const OrganizerOverviewPage = async () => {
     };
 
     const user = await getUser();
-    const isPremium = user?.isPremium;
 
     return (
         <div className="space-y-2 mt-4">

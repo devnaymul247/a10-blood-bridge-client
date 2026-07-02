@@ -33,9 +33,10 @@ const DashboardSideBar = () => {
   ]
 
   const adminMenu = [
-    { key: "users", label: "Users", icon: FaUserShield, href: "/dashboard/users" },
-    { key: "events", label: "Approve Events", icon: FaCalendarAlt, href: "/dashboard/events" },
-    { key: "transactions", label: "Transaction Logs", icon: FaHistory, href: "/dashboard/transactions" },
+    { key: "admin", label: "Admin Overview", icon: FaUserShield, href: "/dashboard/admin" },
+    { key: "profile", label: "Profile", icon: FaUser, href: "/dashboard/admin/profile" },
+    { key: "user-management", label: "User Management", icon: FaUsers, href: "/dashboard/admin/user-management" },
+    
   ]
 
   const role = session?.user?.role;
