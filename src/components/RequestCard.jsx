@@ -1,6 +1,7 @@
 'use client';
 import { Card, Button, Separator } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import Link from 'next/link';
 
 const TONE_STYLES = {
   critical: { ring: '#dc2626', bg: 'rgba(220,38,38,0.12)', text: '#fca5a5' },
@@ -116,10 +117,12 @@ export default function RequestCards({ bloodRequests }) {
                 <Icon icon="mdi:email-outline" />
                 <span className="truncate">{req.requesterEmail || 'No contact'}</span>
               </a>
-              <Button size="sm" color="danger" className="font-semibold">
+              <Link href={`/donation-requests/${req._id}`}>
+                <Button size="sm" color="danger" className="font-semibold">
                 <Icon icon="mdi:hand-heart" className="mr-1" />
                 I can help
-              </Button>
+                </Button>
+              </Link>
             </div>
           </Card>
         );

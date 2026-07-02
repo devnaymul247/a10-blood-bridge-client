@@ -2,7 +2,7 @@ import RequestCards from '@/components/RequestCard';
 import React from 'react';
 
 const allDonationRequestPage = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/donor/my-requests`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/donation-requests`, {
     method: 'GET',
     headers: {
       'content-type': 'application/json'

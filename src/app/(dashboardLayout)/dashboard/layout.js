@@ -1,6 +1,7 @@
 
 import DashboardSideBar from "@/components/DashboardSidebar";
 import Navbar from "@/components/Navbar";
+import { Toast } from "@heroui/react";
 
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
             <div className="px-6 py-10 max-w-5xl w-full">
                 {children}
             </div>
+            <Toast.Provider />
         </div>
   );
 }

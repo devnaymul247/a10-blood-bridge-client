@@ -14,6 +14,7 @@ import {
   toast,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import { authClient } from '@/lib/auth-client';
 
 const BLOOD_GROUPS = [
   { value: 'A+', label: 'A+' },
@@ -33,6 +34,9 @@ export default function CreateDonationRequest() {
   const [selectedUpazilaName, setSelectedUpazilaName] = useState('');
   const [allUpazilas, setAllUpazilas] = useState([]);
   const [validationMessage, setValidationMessage] = useState('');
+
+  const userData = authClient.useSession();
+  const user = userData?.data?.user;
 
   // Load districts and upazilas from JSON files
   useEffect(() => {
@@ -147,7 +151,8 @@ export default function CreateDonationRequest() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextField 
-                  isRequired
+                  isDisabled
+                  value={user?.name || ''}
                   name="requesterName"
                   className="w-full"
                 >
@@ -161,13 +166,13 @@ export default function CreateDonationRequest() {
                 </TextField>
                 
                 <TextField 
-                  isRequired
+                  isDisabled
+                  value={user?.email || ''}
                   name="requesterEmail"
                   className="w-full"
                 >
                   <Label className="text-default-400">Your Email</Label>
                   <Input 
-                    placeholder="Enter your email" 
                     variant="bordered"
                     className="text-default-400"
                   />

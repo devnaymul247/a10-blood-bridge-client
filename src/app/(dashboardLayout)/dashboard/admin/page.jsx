@@ -18,8 +18,16 @@ const OrganizerOverviewPage = async () => {
   const data = await res.json();
   const users = Array.isArray(data) ? data : data?.data || [];
 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/donor/all-blood-requests`, {
+    method: 'GET',
+    headers: {
+      'content-type': 'application/json'
+    }
+  })
+  const bloodRequests = await response.json()
+
     const stats = {
-        totalBloodRequests: 150,
+        totalBloodRequests: bloodRequests.length,
         totalFund: 2450,
         totalUsers: users.length,
     };

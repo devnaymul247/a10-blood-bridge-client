@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { Toast } from "@heroui/react";
 
 
 export const metadata = {
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
         <div>
           {children}
         </div>
+        <Toast.Provider />
         <Footer />
       </>
   );
