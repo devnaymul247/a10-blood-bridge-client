@@ -8,7 +8,7 @@ import { FaCrown, FaUsers, FaDollarSign, FaList } from "react-icons/fa"
 const OrganizerOverviewPage = async () => {
     // to fetch the total number of users from the server
     const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/admin/users`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/volunteer/users`,
     {
       method: 'GET',
       headers: { 'content-type': 'application/json' },
@@ -31,6 +31,8 @@ const OrganizerOverviewPage = async () => {
         totalFund: 2450,
         totalUsers: users.length,
     };
+
+    const user = await getUser();
 
     return (
         <div className="space-y-2 mt-4">

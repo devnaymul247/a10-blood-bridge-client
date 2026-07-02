@@ -28,8 +28,9 @@ const DashboardSideBar = () => {
 
   const volunteerMenu = [
     { key: "overview", label: "Overview", icon: FaUserCircle, href: "/dashboard/volunteer" },
-    { key: "tickets", label: "My Tickets", icon: FaTicketAlt, href: "/dashboard/volunteer/tickets" },
-    { key: "payments", label: "Payments", icon: FaHistory, href: "/dashboard/volunteer/payments" },
+    { key: "profile", label: "Profile", icon: FaUser, href: "/dashboard/volunteer/profile" },
+    { key: "my-requests", label: "My Requests", icon: FaHistory, href: "/dashboard/volunteer/my-requests" },
+    { key: "create-request", label: "Create Request", icon: FaPlus, href: "/dashboard/volunteer/create-request" },
   ]
 
   const adminMenu = [

@@ -4,32 +4,15 @@ import { Button } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 
-const STATUS_FLOW = ['pending', 'inprogress', 'done'];
-
-const STATUS_STYLES = {
-  pending:    { bg: 'bg-amber-50',   text: 'text-amber-600',   icon: 'mdi:clock-outline' },
-  inprogress: { bg: 'bg-blue-50',    text: 'text-blue-600',    icon: 'mdi:progress-clock' },
-  done:       { bg: 'bg-emerald-50', text: 'text-emerald-600', icon: 'mdi:check-circle-outline' },
-  cancelled:  { bg: 'bg-slate-100',  text: 'text-slate-500',   icon: 'mdi:cancel' },
+const ROLE_STYLES = {
+  donor:     { bg: 'bg-red-50',   text: 'text-[#c1121f]', icon: 'mdi:water' },
+  volunteer: { bg: 'bg-violet-50', text: 'text-violet-600', icon: 'mdi:hand-heart-outline' },
 };
-
-const STATUS_LABELS = {
-  pending: 'Pending',
-  inprogress: 'In Progress',
-  done: 'Done',
-  cancelled: 'Cancelled',
-};
-
-function nextStatus(current) {
-  const idx = STATUS_FLOW.indexOf(current);
-  if (idx === -1 || idx === STATUS_FLOW.length - 1) return null; // done or cancelled = no next
-  return STATUS_FLOW[idx + 1];
-}
 
 export default function UsersTable({ users: initialUsers }) {
   const [users, setUsers] = useState(initialUsers || []);
   const [blockingId, setBlockingId] = useState(null);
-  const [statusLoadingId, setStatusLoadingId] = useState(null);
+  const [roleLoadingId, setRoleLoadingId] = useState(null);
   const [search, setSearch] = useState('');
 
   const filtered = users.filter((u) => {
@@ -66,27 +49,28 @@ export default function UsersTable({ users: initialUsers }) {
     }
   };
 
-  const handleStatusChange = async (user, newStatus) => {
-    setStatusLoadingId(user._id);
+  const handleRoleToggle = async (user) => {
+    const newRole = user.role === 'volunteer' ? 'donor' : 'volunteer';
+    setRoleLoadingId(user._id);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/admin/requests/${user._id}/status`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/admin/users/${user._id}/role`,
         {
           method: 'PATCH',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({ role: newRole }),
         }
       );
       if (!res.ok) throw new Error('Failed');
       setUsers((prev) =>
         prev.map((u) =>
-          u._id === user._id ? { ...u, status: newStatus } : u
+          u._id === user._id ? { ...u, role: newRole } : u
         )
       );
     } catch (err) {
-      console.error('Status error:', err);
+      console.error('Role toggle error:', err);
     } finally {
-      setStatusLoadingId(null);
+      setRoleLoadingId(null);
     }
   };
 
@@ -100,17 +84,16 @@ export default function UsersTable({ users: initialUsers }) {
             User <span className="text-[#c1121f]">Management</span>
           </h1>
           <p className="text-sm text-slate-500">
-            Manage donor accounts, block access, and track request status.
+            Manage donor accounts and block access.
           </p>
         </div>
 
         {/* Stats row */}
-        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mb-6 grid grid-cols-3 gap-3">
           {[
-            { label: 'Total Users',  value: users.length,                                    icon: 'mdi:account-group-outline', color: 'text-slate-700' },
-            { label: 'Active',       value: users.filter((u) => !u.isBlocked).length,        icon: 'mdi:account-check-outline', color: 'text-emerald-600' },
-            { label: 'Blocked',      value: users.filter((u) => u.isBlocked).length,         icon: 'mdi:block-helper',          color: 'text-[#c1121f]' },
-            { label: 'Pending',      value: users.filter((u) => u.status === 'pending').length, icon: 'mdi:clock-outline',      color: 'text-amber-600' },
+            { label: 'Total Users', value: users.length,                              icon: 'mdi:account-group-outline', color: 'text-slate-700' },
+            { label: 'Active',      value: users.filter((u) => !u.isBlocked).length,  icon: 'mdi:account-check-outline', color: 'text-emerald-600' },
+            { label: 'Blocked',     value: users.filter((u) => u.isBlocked).length,   icon: 'mdi:block-helper',          color: 'text-[#c1121f]' },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-black/5 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-2 mb-1">
@@ -137,12 +120,12 @@ export default function UsersTable({ users: initialUsers }) {
         <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
 
           {/* Head */}
-          <div className="hidden md:grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr] gap-3 border-b border-slate-100 bg-slate-50 px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <div className="hidden md:grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1.2fr] gap-3 border-b border-slate-100 bg-slate-50 px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
             <span>Donor</span>
             <span>Email</span>
             <span>Blood</span>
             <span className="text-center">Account</span>
-            <span className="text-center">Request</span>
+            <span className="text-center">Role</span>
             <span className="text-center">Actions</span>
           </div>
 
@@ -158,13 +141,13 @@ export default function UsersTable({ users: initialUsers }) {
 
           {/* Rows */}
           {filtered.map((user, i) => {
-            const statusStyle = STATUS_STYLES[user.status] || STATUS_STYLES.pending;
-            const next = nextStatus(user.status);
+            const role = user.role || 'donor';
+            const roleStyle = ROLE_STYLES[role] || ROLE_STYLES.donor;
 
             return (
               <div
                 key={user._id || i}
-                className="grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr_1fr_1fr_1fr] gap-3 items-center border-b border-slate-100 px-6 py-4 last:border-b-0 hover:bg-slate-50/60 transition-colors"
+                className="grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr_1fr_1fr_1.2fr] gap-3 items-center border-b border-slate-100 px-6 py-4 last:border-b-0 hover:bg-slate-50/60 transition-colors"
               >
                 {/* Donor */}
                 <div className="flex items-center gap-3 min-w-0">
@@ -178,7 +161,7 @@ export default function UsersTable({ users: initialUsers }) {
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-black">{user.name || '—'}</p>
-                    <p className="text-xs text-slate-400 capitalize">{user.role || 'donor'}</p>
+                    <p className="text-xs text-slate-400 capitalize">{role}</p>
                   </div>
                 </div>
 
@@ -207,18 +190,27 @@ export default function UsersTable({ users: initialUsers }) {
                   )}
                 </div>
 
-                {/* Request status */}
+                {/* Role toggle */}
                 <div className="flex md:justify-center">
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyle.bg} ${statusStyle.text}`}>
-                    <Icon icon={statusStyle.icon} className="text-xs" />
-                    {STATUS_LABELS[user.status] || 'Pending'}
-                  </span>
+                  <Button
+                    size="sm"
+                    isDisabled={user.role === 'admin'}
+                    isLoading={roleLoadingId === user._id}
+                    onPress={() => handleRoleToggle(user)}
+                    className={`text-xs font-semibold rounded-lg ${roleStyle.bg} ${roleStyle.text} hover:opacity-80`}
+                  >
+                    {roleLoadingId !== user._id && (
+                      <Icon icon={roleStyle.icon} className="mr-1" />
+                    )}
+                    <span className="capitalize">{role}</span>
+                  </Button>
                 </div>
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 md:justify-center flex-wrap">
                   {/* Block / Unblock */}
                   <Button
+                    isDisabled={user.role === 'admin'}
                     size="sm"
                     isLoading={blockingId === user._id}
                     onPress={() => handleBlock(user)}
@@ -233,36 +225,6 @@ export default function UsersTable({ users: initialUsers }) {
                     )}
                     {user.isBlocked ? 'Unblock' : 'Block'}
                   </Button>
-
-                  {/* Advance status */}
-                  {next && user.status !== 'cancelled' && (
-                    <Button
-                      size="sm"
-                      isLoading={statusLoadingId === user._id}
-                      onPress={() => handleStatusChange(user, next)}
-                      className="text-xs font-semibold rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"
-                    >
-                      {statusLoadingId !== user._id && (
-                        <Icon icon="mdi:arrow-right-circle-outline" className="mr-1" />
-                      )}
-                      → {STATUS_LABELS[next]}
-                    </Button>
-                  )}
-
-                  {/* Cancel (only when pending or inprogress) */}
-                  {(user.status === 'pending' || user.status === 'inprogress') && (
-                    <Button
-                      size="sm"
-                      isLoading={statusLoadingId === user._id}
-                      onPress={() => handleStatusChange(user, 'cancelled')}
-                      className="text-xs font-semibold rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200"
-                    >
-                      {statusLoadingId !== user._id && (
-                        <Icon icon="mdi:cancel" className="mr-1" />
-                      )}
-                      Cancel
-                    </Button>
-                  )}
                 </div>
               </div>
             );
